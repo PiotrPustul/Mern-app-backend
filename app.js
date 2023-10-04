@@ -13,10 +13,6 @@ const app = express()
 
 app.use(bodyParser.json())
 
-/**
- * Handle all req starting with the path /upload/images
- * express.static will return file stored in /upload/images
- */
 app.use('/uploads/images', express.static(path.join('uploads', 'images')))
 
 app.use((req, res, next) => {
@@ -37,13 +33,7 @@ app.use((req, res, next) => {
   throw new HttpError('Could not find the route.', 404)
 })
 
-/**
- * General error handler
- */
 app.use((error, req, res, next) => {
-  /**
-   * Check if there is a file (image) in the request body - delete a file if we got an error
-   *  */
   if (req.file) {
     fs.unlink(req.file.path, (err) => {
       console.log(err)
@@ -53,6 +43,7 @@ app.use((error, req, res, next) => {
   if (res.headerSent) {
     return next(error)
   }
+
   res.status(error.code || 500)
   res.json({ message: error.message || 'An unknown error occured' })
 })
